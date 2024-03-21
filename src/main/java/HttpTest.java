@@ -60,10 +60,10 @@ public class HttpTest {
 //                CloseableHttpClient httpClient = HttpClients.createDefault();
 
 
-                // 发送GET请求
-                HttpGet httpGet = new HttpGet("http://192.168.8.1:80");
+                // 发送GPOST请求
+                HttpPost httpPost = new HttpPost("http://10.45.51.136:8001/simulate/http");
                 CloseableHttpResponse responseGet = null;
-                responseGet = httpClient.execute(httpGet);
+                responseGet = httpClient.execute(httpPost);
                 System.out.println("GET Response Status:: " + responseGet.getStatusLine().getStatusCode());
                 String strGet = EntityUtils.toString(responseGet.getEntity());
                 System.out.println("GET Response Body:: " + strGet);

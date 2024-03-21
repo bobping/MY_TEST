@@ -143,9 +143,10 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
                 HttpPost httpPost = new HttpPost(url);
                 httpPost.setHeader("SOAPAction", "");
                 httpPost.setHeader("Content-Type", "application/json; charset=UTF-8");
+                httpPost.setHeader("Connection", "close");
                 for (; i < times; i++) {
                     String repsonse = synHttpPoolClient.postSoapLazyAbort(url, "{}",
-                            SynHttpPoolClient.CHARSET_UTF8, "", null);
+                            SynHttpPoolClient.CHARSET_UTF8, "", httpPost);
 
                     log.info("keepalive:第" + i + "次，响应：" + repsonse);
 
