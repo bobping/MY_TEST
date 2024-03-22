@@ -102,6 +102,7 @@
                                     <classifier>spring-boot</classifier>
                                     <mainClass>
                                         nettyserver.NettyHttpServer
+<!--                                        HttpTest-->
                                     </mainClass>
                                 </configuration>
                             </execution>

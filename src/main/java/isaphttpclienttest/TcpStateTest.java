@@ -86,26 +86,22 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
             return "times not found";
         }
 
-        String result = "";
         int i = 0;
         if (mode.equals("reuse")) {
             try {
                 SynHttpPoolClient synHttpPoolClient = new SynHttpPoolClient(1, 1,
                         5 * 1000, 1 * 1000, 1 * 1000, 60);
 
-                long l = System.currentTimeMillis();
-                HttpPost httpPost = new HttpPost(url);
-                httpPost.setHeader("SOAPAction", "");
-                httpPost.setHeader("Content-Type", "application/json; charset=UTF-8");
-                //httpPost.setHeader("Cookie", cookie);
                 for (; i < times; i++) {
+                    long l = System.currentTimeMillis();
+
                     String repsonse = synHttpPoolClient.postSoapLazyAbort(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", null);
 
-                    log.info("reuse:第" + i + "次，响应：" + repsonse);
+                    long cost = (System.currentTimeMillis() - l);
+                    log.info("new:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
 
                 }
-                result = (System.currentTimeMillis() - l) / times + "ms per request.";
             }
             catch (Exception e) {
                 log.info("", i);
@@ -114,20 +110,19 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
         }
         else if (mode.equals("new")) {
             try {
-                long l = System.currentTimeMillis();
-                HttpPost httpPost = new HttpPost(url);
-                httpPost.setHeader("SOAPAction", "");
-                httpPost.setHeader("Content-Type", "application/json; charset=UTF-8");
-                //httpPost.setHeader("Cookie", cookie);
                 for (; i < times; i++) {
+
                     SynHttpPoolClient synHttpPoolClient = new SynHttpPoolClient(1, 1,
                             5 * 1000, 1 * 1000, 1 * 1000, 60);
+
+                    long l = System.currentTimeMillis();
                     String repsonse = synHttpPoolClient.postSoapClose(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", null);
 
-                    log.info("new:第" + i + "次，响应：" + repsonse);
+                    long cost = (System.currentTimeMillis() - l);
+                    log.info("new:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
+
                 }
-                result = (System.currentTimeMillis() - l) / times + "ms per request.";
             }
             catch (Exception e) {
                 log.info("", i);
@@ -138,20 +133,18 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
             try {
                 SynHttpPoolClient synHttpPoolClient = new SynHttpPoolClient(1, 1,
                         5 * 1000, 1 * 1000, 1 * 1000, 10);
-
-                long l = System.currentTimeMillis();
                 HttpPost httpPost = new HttpPost(url);
-                httpPost.setHeader("SOAPAction", "");
-                httpPost.setHeader("Content-Type", "application/json; charset=UTF-8");
                 httpPost.setHeader("Connection", "close");
                 for (; i < times; i++) {
+                    long l = System.currentTimeMillis();
+
                     String repsonse = synHttpPoolClient.postSoapLazyAbort(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", httpPost);
 
-                    log.info("keepalive:第" + i + "次，响应：" + repsonse);
+                    long cost = (System.currentTimeMillis() - l);
 
+                    log.info("keepalive:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
                 }
-                result = (System.currentTimeMillis() - l) / times + "ms per request.";
             }
             catch (Exception e) {
                 log.info("", i);
@@ -159,7 +152,7 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
             }
         }
 
-        return result;
+        return null;
     }
 
 
