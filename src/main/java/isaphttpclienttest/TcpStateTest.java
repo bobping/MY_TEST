@@ -12,6 +12,10 @@ import org.apache.rocketmq.shaded.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
     private static final Logger log = LoggerFactory.getLogger(TcpStateTest.class);
@@ -27,7 +31,7 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, HttpContent msg) {
+    public void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws IOException {
 
 
         String content = msg.content().toString(io.netty.util.CharsetUtil.UTF_8);
@@ -62,7 +66,7 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
         ctx.close();
     }
 
-    public String testTcpState( String content) {
+    public String testTcpState( String content) throws IOException {
         JSONObject jsonObject = JSONObject.parseObject(content);
 
         //String url = "http://172.16.24.63:7788/simulate/http";
@@ -150,6 +154,15 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
                 log.info("", i);
                 log.error("", e.getMessage(), e);
             }
+        }
+        else if (mode.equals("urlConnectTest")) {
+            HttpURLConnectTest test = new HttpURLConnectTest();
+            Map<String, Object> headMap = new HashMap<>();
+            headMap.put("Content-Type", "text/xml;charset=UTF-8");
+            headMap.put("SOAPAction", "Notification");
+            headMap.put("Connection", "");
+            headMap.put("Host", "10.45.51.136:8001");
+            test.postWriteWithHeadVPCRF(url, 10000, 10000, headMap);
         }
 
         return null;
