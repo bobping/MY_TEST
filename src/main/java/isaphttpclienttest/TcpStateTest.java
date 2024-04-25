@@ -37,7 +37,7 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
         this.testTcpState(content);
 
         // 准备给客户端浏览器发送的数据
-        ByteBuf byteBuf = Unpooled.copiedBuffer("Hello Client", CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer("Ok", CharsetUtil.UTF_8);
 
         // 设置 HTTP 版本, 和 HTTP 的状态码, 返回内容
         DefaultFullHttpResponse defaultFullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
@@ -95,11 +95,11 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
                 for (; i < times; i++) {
                     long l = System.currentTimeMillis();
 
-                    String repsonse = synHttpPoolClient.postSoapLazyAbort(url, "{}",
+                    String response = synHttpPoolClient.postSoapLazyAbort(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", null);
 
                     long cost = (System.currentTimeMillis() - l);
-                    log.info("new:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
+                    log.info("new:第" + (i+1) + "次，响应：" + response + "---cost(ms):" + cost);
 
                 }
             }
@@ -116,11 +116,11 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
                             5 * 1000, 1 * 1000, 1 * 1000, 60);
 
                     long l = System.currentTimeMillis();
-                    String repsonse = synHttpPoolClient.postSoapClose(url, "{}",
+                    String response = synHttpPoolClient.postSoapClose(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", null);
 
                     long cost = (System.currentTimeMillis() - l);
-                    log.info("new:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
+                    log.info("new:第" + (i+1) + "次，响应：" + response + "---cost(ms):" + cost);
 
                 }
             }
@@ -129,21 +129,23 @@ public class TcpStateTest extends SimpleChannelInboundHandler<HttpContent> {
                 log.error("", e.getMessage(), e);
             }
         }
-        else if (mode.equals("keepalive")) {
+        else if (mode.equals("headerClose")) {
             try {
-                SynHttpPoolClient synHttpPoolClient = new SynHttpPoolClient(1, 1,
-                        5 * 1000, 1 * 1000, 1 * 1000, 10);
+
                 HttpPost httpPost = new HttpPost(url);
                 httpPost.setHeader("Connection", "close");
                 for (; i < times; i++) {
+
+                    SynHttpPoolClient synHttpPoolClient = new SynHttpPoolClient(1, 1,
+                            5 * 1000, 1 * 1000, 1 * 1000, 60);
                     long l = System.currentTimeMillis();
 
-                    String repsonse = synHttpPoolClient.postSoapLazyAbort(url, "{}",
+                    String response = synHttpPoolClient.postSoapClose(url, "{}",
                             SynHttpPoolClient.CHARSET_UTF8, "", httpPost);
 
                     long cost = (System.currentTimeMillis() - l);
 
-                    log.info("keepalive:第" + (i+1) + "次，响应：" + repsonse + "---cost(ms):" + cost);
+                    log.info("headerClose:第" + (i+1) + "次，响应：" + response + "---cost(ms):" + cost);
                 }
             }
             catch (Exception e) {
