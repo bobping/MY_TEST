@@ -1,3 +1,5 @@
+package singletest;
+
 public class AtomicTest implements Runnable {
 
     static long value = 0;

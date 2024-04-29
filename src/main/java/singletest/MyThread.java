@@ -1,3 +1,5 @@
+package singletest;
+
 public class MyThread implements Runnable{
 
     public void run() {

@@ -11,12 +11,20 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpURLConnectTest {
     private static final Logger logger = LoggerFactory.getLogger(HttpURLConnectTest.class);
 
-    public String postWriteWithHeadVPCRF(String url, int connectTimeout, int readTimeout, Map<String, Object> headMap) throws IOException {
+    public String postWriteWithHeadVPCRF(String url, int connectTimeout, int readTimeout) throws IOException {
+
+        Map<String, Object> headMap = new HashMap<>();
+        headMap.put("Content-Type", "text/xml;charset=UTF-8");
+        headMap.put("SOAPAction", "Notification");
+        headMap.put("Connection", "");
+        headMap.put("Host", "10.45.51.136:8001");
+
         HttpURLConnection connection = null;
         OutputStream out = null;
         InputStream in = null;

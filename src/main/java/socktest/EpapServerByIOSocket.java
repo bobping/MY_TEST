@@ -16,7 +16,7 @@ import java.net.Socket;
  * @Copyright notice iWhaleCloud
  * @userName NEIL
  */
-public class EpapServerMultiConnection {
+public class EpapServerByIOSocket {
     public static void main(String[] args) throws IOException {
 
         Socket socket;

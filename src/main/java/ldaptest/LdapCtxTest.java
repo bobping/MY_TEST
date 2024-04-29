@@ -10,7 +10,7 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import java.util.Hashtable;
 
-public class LdapCtx {
+public class LdapCtxTest {
 
     public static void main(String[] args) {
 
@@ -48,7 +48,7 @@ public class LdapCtx {
 
             ctx.close();
         } catch (NamingException e) {
-            System.err.println("Failed to connect to LDAP server: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

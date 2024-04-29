@@ -103,7 +103,7 @@
                                     <mainClass>
                                         socktest.SocketStart
 <!--                                        nettyserver.NettyHttpServer-->
-<!--                                        HttpTest-->
+<!--                                        singletest.HttpTest-->
                                     </mainClass>
                                 </configuration>
                             </execution>

@@ -26,7 +26,7 @@ public class NettyHttpServer {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new HttpHelloWorldServerInitializer());
+                    .childHandler(new HttpServerInitializer());
             // 绑定端口
             Channel ch = b.bind(PORT).sync().channel();
             System.err.println("Open your web browser and navigate to " +

@@ -1,3 +1,5 @@
+package rocketmqtest;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;

@@ -1,3 +1,5 @@
+package rocketmqtest;
+
 import java.io.IOException;
 import org.apache.rocketmq.client.apis.ClientConfiguration;
 import org.apache.rocketmq.client.apis.ClientConfigurationBuilder;
