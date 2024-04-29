@@ -21,7 +21,7 @@ public class LdapCtx {
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, "cn=bobpingadmin,dc=bobping,dc=cn");
         env.put(Context.SECURITY_CREDENTIALS, "123456");
-        env.put("java.naming.ldap.factory.socket", "ldapConn.CustomSocketFactory4Mex");
+        env.put("java.naming.ldap.factory.socket", "ldaptest.CustomSocketFactory");
         env.put("com.sun.jndi.ldap.connect.timeout", "2000");
         env.put("com.sun.jndi.ldap.read.timeout", "5000");
 
@@ -43,7 +43,7 @@ public class LdapCtx {
 
             Hashtable<?, ?> environment = ctx.getEnvironment();
             for (Object key : environment.keySet()) {
-                System.out.println(key + ": " + environment.get(key));
+                System.out.println(key + " = " + environment.get(key));
             }
 
             ctx.close();
