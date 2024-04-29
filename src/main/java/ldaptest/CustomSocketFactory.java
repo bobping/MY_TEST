@@ -1,4 +1,4 @@
-package ldapConn;
+package ldaptest;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
 public class CustomSocketFactory extends SocketFactory {
 
     public static SocketFactory getDefault() {
-        synchronized(CustomSocketFactory4Mex.class) {
-            return new CustomSocketFactory4Mex();
+        synchronized(CustomSocketFactory.class) {
+            return new CustomSocketFactory();
         }
 
     }
