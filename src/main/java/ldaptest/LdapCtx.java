@@ -21,7 +21,9 @@ public class LdapCtx {
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, "cn=bobpingadmin,dc=bobping,dc=cn");
         env.put(Context.SECURITY_CREDENTIALS, "123456");
-        env.put("java.naming.ldap.factory.socket", "ldaptest.CustomSocketFactory");
+        env.put("java.naming.ldap.factory.socket", "ldapConn.CustomSocketFactory4Mex");
+        env.put("com.sun.jndi.ldap.connect.timeout", "2000");
+        env.put("com.sun.jndi.ldap.read.timeout", "5000");
 
         try {
             LdapContext ctx = new InitialLdapContext(env, null);
