@@ -1,5 +1,6 @@
 package singletest;
 
+//此类需要在32位系统下测试
 public class AtomicTest implements Runnable {
 
     static long value = 0;
