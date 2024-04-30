@@ -80,6 +80,4 @@ public class TcpStatusTest {
             log.error("", e.getMessage(), e);
         }
     }
-
-
 }
