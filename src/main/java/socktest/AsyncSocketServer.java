@@ -45,7 +45,7 @@ public class AsyncSocketServer implements Runnable {
 			asyncServerSocketChannel.setOption(
 					StandardSocketOptions.SO_REUSEADDR, true);
 			asyncServerSocketChannel.bind(socketAddress);
-            handler = new EPAPMockHandler(asyncServerSocketChannel, maxCon);
+            handler = new MINSATMockHandler(asyncServerSocketChannel, maxCon);
 
 
 		} catch (UnknownHostException e) {

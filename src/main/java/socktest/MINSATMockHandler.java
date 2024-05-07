@@ -30,8 +30,6 @@ public class MINSATMockHandler implements CompletionHandler<AsynchronousSocketCh
 
 		connectionCount++;
 		asynchronousServerSocketChannel.accept(null, this);
-
-
 		ByteBuffer inbuffer = ByteBuffer.allocate(1024 * 64);
 		ByteBuffer outbuffer = ByteBuffer.allocate(256);
 		StringBuilder msgStr = new StringBuilder();
@@ -69,16 +67,15 @@ public class MINSATMockHandler implements CompletionHandler<AsynchronousSocketCh
 						outbuffer = ByteBuffer.wrap(response.getBytes("utf-8"));
 						while(asynchSocketChannel.write(outbuffer).get()>0){
 							logger.info("<<<<<<<<<<正在LOGIN响应:" + response);
-
 						}
-						return;
 					}
 					else if (msgStr.toString().startsWith("LOGOUT")) { //登出
 						logger.info(">>>>>>>>>>受理LOGOUT请求：" + msgStr);
-						outbuffer = ByteBuffer.wrap("\r\n".getBytes("utf-8"));
+						outbuffer = ByteBuffer.wrap("Logout successfully!\r\n".getBytes("utf-8"));
 						while(asynchSocketChannel.write(outbuffer).get()>0){
 							logger.info("<<<<<<<<<<正在LOGOUT响应");
 						}
+						return;
 					}
 					else if (msgStr.toString().startsWith("CREATE")) { //业务指令
 						logger.info(">>>>>>>>>>受理指令请求：" + msgStr);
