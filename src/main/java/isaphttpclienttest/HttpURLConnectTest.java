@@ -17,6 +17,34 @@ import java.util.Map;
 public class HttpURLConnectTest {
     private static final Logger logger = LoggerFactory.getLogger(HttpURLConnectTest.class);
 
+    public static void main(String[] args) throws IOException {
+        HttpURLConnectTest test = new HttpURLConnectTest();
+
+        for (int i = 0; i<10; i++) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        try {
+                            test.postWriteWithHeadVPCRF("http://172.16.23.35:8600/epsmock", 2000, 3000);
+                            Thread.sleep(10);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }).start();
+
+
+        }
+
+
+    }
+
     public String postWriteWithHeadVPCRF(String url, int connectTimeout, int readTimeout) throws IOException {
 
         Map<String, Object> headMap = new HashMap<>();

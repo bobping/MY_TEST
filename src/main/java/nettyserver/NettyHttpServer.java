@@ -17,7 +17,8 @@ public class NettyHttpServer {
         // boosGroup 只处理连接,所以这里我们给了一个
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         // 这个是真正处理读写请求的线程组
-        EventLoopGroup workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors() * 2);
+        System.out.println(Runtime.getRuntime().availableProcessors());
+        EventLoopGroup workerGroup = new NioEventLoopGroup(100);
         try {         
             ServerBootstrap b = new ServerBootstrap();
             // 设置全连接队列数量

@@ -20,9 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class TestListByHttp extends SimpleChannelInboundHandler<HttpContent> {
+public class TestListByHttp extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private static final Logger log = LoggerFactory.getLogger(TestListByHttp.class);
+    HttpResponseStatus httpResponseStatus = HttpResponseStatus.OK;
 
     public void testList( String content) throws IOException {
         JSONObject jsonObject = JSONObject.parseObject(content);
@@ -53,29 +54,44 @@ public class TestListByHttp extends SimpleChannelInboundHandler<HttpContent> {
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws IOException {
-
+    public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws IOException {
         String content = msg.content().toString(CharsetUtil.UTF_8);
+        String uri = msg.uri();
+        String responseStr = "OK";
+        log.info("访问的Uri: " + uri);
         log.info("请求报文是：" + content);
 
-        this.testList(content);
+        if("/epsmock".equals(uri)) {
+            responseStr = "400";
+        } else if ("/imsmock".equals(uri)) {
+            responseStr = "imsmock success";
+        } else if ("/modifyResponse".equals(uri)){
+
+            if(HttpResponseStatus.OK.equals(httpResponseStatus)){
+                httpResponseStatus = HttpResponseStatus.FORBIDDEN;
+            } else {
+                httpResponseStatus = HttpResponseStatus.OK;
+            }
+            log.info("修改响应状态位:" + httpResponseStatus);
+        } else {
+            this.testList(content);
+
+        }
 
         // 准备给客户端浏览器发送的数据
-        ByteBuf byteBuf = Unpooled.copiedBuffer("Ok", CharsetUtil.UTF_8);
+        ByteBuf byteBuf = Unpooled.copiedBuffer(responseStr , CharsetUtil.UTF_8);
 
         // 设置 HTTP 版本, 和 HTTP 的状态码, 返回内容
-        DefaultFullHttpResponse defaultFullHttpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
+        DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, httpResponseStatus, byteBuf);
 
         // 设置 HTTP 请求头
         // 设置内容类型是文本类型
-        defaultFullHttpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         // 设置返回内容的长度
-        defaultFullHttpResponse.headers().set(
-                HttpHeaderNames.CONTENT_LENGTH,
-                byteBuf.readableBytes());
-
+        response.headers().set(HttpHeaderNames.CONTENT_LENGTH, byteBuf.readableBytes());
         // 写出 HTTP 数据
-        ctx.writeAndFlush(defaultFullHttpResponse);
+        ctx.writeAndFlush(response);
 
     }
 
@@ -94,8 +110,6 @@ public class TestListByHttp extends SimpleChannelInboundHandler<HttpContent> {
         cause.printStackTrace();
         ctx.close();
     }
-
-
 
 
 }

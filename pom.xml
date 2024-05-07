@@ -101,8 +101,8 @@
                                 <configuration>
                                     <classifier>spring-boot</classifier>
                                     <mainClass>
-                                        socktest.SocketStart
-<!--                                        nettyserver.NettyHttpServer-->
+<!--                                        socktest.SocketStart-->
+                                        nettyserver.NettyHttpServer
 <!--                                        singletest.HttpTest-->
                                     </mainClass>
                                 </configuration>
