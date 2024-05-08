@@ -87,7 +87,7 @@ public class NeProtocolMINSAT {
     public boolean connect() throws Exception {
         this.setState(ConnectionDomain.STATE_DISCONNECT);
         socket = new Socket();
-        socket.connect(new InetSocketAddress("172.16.23.35", 5873), 3000);
+        socket.connect(new InetSocketAddress("172.16.23.35", 5873), 2300);
         socket.setKeepAlive(true);
         // 暂时不需要
         //socket.setSoLinger(true, 0);
@@ -115,7 +115,6 @@ public class NeProtocolMINSAT {
         }
         return true;
     }
-
 
     public boolean sendObject(Object o) throws Exception {
         out.write(o.toString().getBytes(Charsets.UTF_8));
@@ -206,7 +205,7 @@ public class NeProtocolMINSAT {
         if (!scheduledTaskHasBeenActivated) {
             scheduledTaskHasBeenActivated = true;
 
-            int second = 10;
+            int second = 2;
             scheduledExecutorService.scheduleAtFixedRate(() -> {
                 taskRunning = true;
                 logger.info("Scheduled task start login...Acquires a permit.");
@@ -221,7 +220,7 @@ public class NeProtocolMINSAT {
                             }
                         }
                         this.disConnect();
-                        Thread.sleep(2000);
+//                        Thread.sleep(2000);
                     }
                     catch (Exception e) {
                         // 断开连接的异常忽略
@@ -244,11 +243,11 @@ public class NeProtocolMINSAT {
             }, second, second, TimeUnit.SECONDS);
 
 
-            scheduledExecutorService.scheduleAtFixedRate(() -> {
-
-                System.gc();
-
-            }, 5, 5, TimeUnit.SECONDS);
+//            scheduledExecutorService.scheduleAtFixedRate(() -> {
+//
+//                System.gc();
+//
+//            }, 5, 5, TimeUnit.SECONDS);
         }
         return true;
     }

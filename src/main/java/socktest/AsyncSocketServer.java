@@ -63,7 +63,7 @@ public class AsyncSocketServer implements Runnable {
 			if (asyncServerSocketChannel.isOpen()) {
 				asyncServerSocketChannel.accept(null, handler);
 			}
-            logger.info("EPAPMockHandler>>>"  + "[" + host + ":"
+            logger.info( handler.getClass().getName() + ">>>"  + "[" + host + ":"
                     + port + "]" + "已启动，准备接收请求[允许的最大连接数为："+maxCon+"]>>>>>>>>>");
 			System.in.read();
 		} catch (IOException e) {

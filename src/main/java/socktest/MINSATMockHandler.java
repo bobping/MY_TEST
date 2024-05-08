@@ -63,7 +63,6 @@ public class MINSATMockHandler implements CompletionHandler<AsynchronousSocketCh
 					if (msgStr.toString().startsWith("LOGIN")) { //登录
 						logger.info(">>>>>>>>>>受理LOGIN请求：" + msgStr);
 						String response = "RESP:0\r\n";
-						Thread.sleep(3000);
 						outbuffer = ByteBuffer.wrap(response.getBytes("utf-8"));
 						while(asynchSocketChannel.write(outbuffer).get()>0){
 							logger.info("<<<<<<<<<<正在LOGIN响应:" + response);
