@@ -38,7 +38,7 @@ public class NeProtocolMINSAT {
     /**
      * true表示定时任务正在运行，准备发指令时要等待
      */
-    private volatile boolean taskRunning = false;
+    public volatile boolean taskRunning = false;
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
     private boolean scheduledTaskHasBeenActivated = false;
@@ -51,27 +51,31 @@ public class NeProtocolMINSAT {
 
         NeProtocolMINSAT con = new NeProtocolMINSAT();
 
-        if(con.getState() == 0){
+        if (con.getState() == 0) {
             con.connect();
         }
-
         con.login();
 
         while (true) {
-            if (con.getState() == ConnectionDomain.STATE_CONNECTION_RESET // 连接重置
-                    || con.getState() == ConnectionDomain.STATE_DISCONNECT) { // 连接断开
 
-                logger.info(">>>>>>>>>check connect>>>>>>>>>>>>>>");
+            try {
+                if (con.getState() == ConnectionDomain.STATE_CONNECTION_RESET // 连接重置
+                        || con.getState() == ConnectionDomain.STATE_DISCONNECT) { // 连接断开
 
-                try {
-                    con.disConnect(); // 断开连接
-                } catch (Exception ex) {
-                    logger.error("", ex);
+                    logger.info(">>>>>>>>>check connect>>>>>>>>>>>>>>");
+
+                    try {
+                        con.disConnect(); // 断开连接
+                    } catch (Exception ex) {
+                        logger.error("", ex);
+                    }
+                    con.connect();
+                    con.login();
                 }
-                con.connect();
-                con.login();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
 
     }
@@ -87,7 +91,9 @@ public class NeProtocolMINSAT {
     public boolean connect() throws Exception {
         this.setState(ConnectionDomain.STATE_DISCONNECT);
         socket = new Socket();
-        socket.connect(new InetSocketAddress("172.16.23.35", 5873), 2300);
+        long s = System.currentTimeMillis();
+        socket.connect(new InetSocketAddress("172.16.23.35", 5873), 3000);
+        logger.info("connect 耗时：" + (System.currentTimeMillis() - s));
         socket.setKeepAlive(true);
         // 暂时不需要
         //socket.setSoLinger(true, 0);
@@ -102,6 +108,15 @@ public class NeProtocolMINSAT {
         this.setState(ConnectionDomain.STATE_DISCONNECT);
         if (socket != null) {
             String msg1 = "LOGOUT;";
+            try {
+                logger.info("begin to send logout msg ... msg1 detail: " + msg1);
+                long s = System.currentTimeMillis();
+                this.sendObject(msg1 + "\r\n");
+                logger.info("telnet send logout msg cost time ms:" + (System.currentTimeMillis() - s));
+            }
+            catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
             socket.close();
             if (in != null) {
                 in.close();
@@ -113,6 +128,7 @@ public class NeProtocolMINSAT {
             in = null;
             out = null;
         }
+//        Thread.sleep(2000);
         return true;
     }
 
@@ -124,6 +140,7 @@ public class NeProtocolMINSAT {
 
     public String recvAll(int timeoutMills, String untilRegexp, boolean timeoutFromClient)
             throws Exception {
+
         StringBuilder sb = new StringBuilder();
         byte[] buff = new byte[2048];
         StringBuilder oriBytes = new StringBuilder(); //记录协议所接收到的
@@ -153,8 +170,7 @@ public class NeProtocolMINSAT {
                     break;
                 }
             }
-        }
-        catch (SocketTimeoutException e) {
+        } catch (SocketTimeoutException e) {
             logger.error("telnet socket timeout exception: ", e);
             if (oriBytes.length() > 1) {
                 oriBytes.deleteCharAt(oriBytes.length() - 1);
@@ -164,8 +180,7 @@ public class NeProtocolMINSAT {
             //sb.append("TIMEOUT: CMD has been sent, but response TIMEOUT!");
             logger.error("TIMEOUT: CMD has been sent, but response TIMEOUT!");
             throw new Exception(e.getMessage(), e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("telnet read msg happen an exception: ", e);
             if (e.getMessage().contains("Socket closed")) {
             }
@@ -178,10 +193,9 @@ public class NeProtocolMINSAT {
     public boolean login() throws Exception {
         loginSuccessRe = Pattern.compile(loginSuccess);
         String loginStr = "LOGIN";
-
-        this.sendObject(loginStr + "\r\n");
-
+        running = true;
         long s = System.currentTimeMillis();
+        this.sendObject(loginStr + "\r\n");
         while (true) {
             if (System.currentTimeMillis() - s > 10000) {
                 logger.error("Login timeout!");
@@ -199,7 +213,9 @@ public class NeProtocolMINSAT {
                 break;
             }
         }
+        logger.info("login 耗时：" + (System.currentTimeMillis() - s));
 
+        running = false;
         // 开启定时任务，每隔一段时间自动登录
         // session id的到期时间所有的接口机都是一样，5分钟内什么都不做网元就会关闭连接。APSP老系统60秒更新一次连接
         if (!scheduledTaskHasBeenActivated) {
@@ -221,21 +237,17 @@ public class NeProtocolMINSAT {
                         }
                         this.disConnect();
 //                        Thread.sleep(2000);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         // 断开连接的异常忽略
                     }
                     this.connect();
                     this.login();
 
-                }
-                catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     logger.error(e.getMessage(), e);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                }
-                finally {
+                } finally {
                     taskRunning = false;
                     semaphore.release();
                 }
